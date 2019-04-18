@@ -12,9 +12,11 @@ Requirements (v1):
 - it should be able to delete todos
 
 Requirements (v2):
+- it should have one constant input field at the top that is used exclusively for creating new todos
 - it should write the new Todo to the unordered list
-- it should create an input field whenever the 'enter' button is pressed in a separate div
-- it should destroy the original input field
+- it should also create an input field which each todo that has 2 purposes
+  - when 'enter' is pressed, it will change that todo
+  - when 'tab' is pressed, it will nest that todo
 -  
 */
 
