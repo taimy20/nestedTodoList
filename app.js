@@ -162,6 +162,11 @@ var view = {
         var inputFieldValue = event.srcElement.value;
         handlers.changeTodo(position, inputFieldValue); 
       }
+    });
+    todosUl.addEventListener('keyup', function(event) {
+      if (event.target.className === 'todoInput' && event.keyCode === 40) {
+        console.log('i wanna nest');
+      }
     })
   }
 }
