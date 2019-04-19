@@ -14,6 +14,7 @@ Requirements (v1):
 Requirements (v2):
 - it should have one constant input field at the top that is used exclusively for creating new todos
 - it should write the new Todo to the unordered list
+- it should have a delete button and a toggle completed button on each todo
 - it should also create an input field which each todo that has 2 purposes
   - when 'enter' is pressed, it will change that todo
   - when 'tab' is pressed, it will nest that todo
@@ -66,12 +67,8 @@ var methods = {
 
 var handlers = {
 
-  changeTodo: function() {
-    var changeTodoPosition = document.getElementById('changeTodoPosition');
-    var changeTodoText = document.getElementById('changeTodoText');
-    methods.changeTodo(changeTodoPosition.value, changeTodoText.value);
-    changeTodoText.value = '';
-    changeTodoPosition.value = '';
+  changeTodo: function(position, inputFieldValue) {
+    methods.changeTodo(position, inputFieldValue);
     view.displayTodos();
   },
 
@@ -90,11 +87,10 @@ var handlers = {
     view.displayTodos();
   },
 
-  addTodo: function(inputFieldValue) {
-    // var addTodoTextInput = document.getElementById('addTodoInput')
-    // methods.addTodo(addTodoTextInput.value);
-    methods.addTodo(inputFieldValue);
-    // addTodoTextInput.value = '';
+  addTodo: function() {
+    var addTodoTextInput = document.getElementById('addTodoInput')
+    methods.addTodo(addTodoTextInput.value);
+    addTodoTextInput.value = '';
     view.displayTodos();
 
   }
@@ -140,7 +136,6 @@ var view = {
     var todoInputField = document.createElement('input');
     todoInputField.type = 'text';
     todoInputField.className = 'todoInput';
-    // todoInputField.id = 
     return todoInputField; 
   },
 
@@ -158,9 +153,10 @@ var view = {
     });
     todosUl.addEventListener('keyup', function(event) {
       if (event.target.className === 'todoInput' && event.keyCode === 13) {
+        var position = parseInt(event.target.parentNode.id);
         var inputField = document.getElementsByClassName('todoInput');
         var inputFieldValue = inputField[0].value;
-        handlers.addTodo(inputFieldValue); 
+        handlers.changeTodo(position, inputFieldValue); 
       }
     })
   }
