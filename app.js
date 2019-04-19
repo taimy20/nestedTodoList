@@ -18,7 +18,12 @@ Requirements (v2):
 - it should also create an input field which each todo that has 2 purposes
   - when 'enter' is pressed, it will change that todo
   - when 'tab' is pressed, it will nest that todo
--  
+  - input field needs access to the li item
+    - it has access to its position
+    - it needs access to its specific value
+    - when the inputField is created, it should have an id
+    - 
+
 */
 
 
@@ -113,7 +118,7 @@ var view = {
       };
       todoLi.appendChild(view.createDeleteButton());
       todoLi.appendChild(view.createToggleButton());
-      todoLi.appendChild(view.createSameLevelTodoInputField());
+      todoLi.appendChild(view.changeTodoInputField());
       todosUl.appendChild(todoLi);
     });
   },
@@ -132,7 +137,7 @@ var view = {
     return toggleButton;
   },
 
-  createSameLevelTodoInputField: function() {
+  changeTodoInputField: function() {
     var todoInputField = document.createElement('input');
     todoInputField.type = 'text';
     todoInputField.className = 'todoInput';
@@ -154,8 +159,7 @@ var view = {
     todosUl.addEventListener('keyup', function(event) {
       if (event.target.className === 'todoInput' && event.keyCode === 13) {
         var position = parseInt(event.target.parentNode.id);
-        var inputField = document.getElementsByClassName('todoInput');
-        var inputFieldValue = inputField[0].value;
+        var inputFieldValue = event.srcElement.value;
         handlers.changeTodo(position, inputFieldValue); 
       }
     })
