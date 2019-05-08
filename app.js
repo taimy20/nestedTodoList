@@ -17,13 +17,15 @@ Requirements (v2):
 - it should have a delete button and a toggle completed button on each todo
 - it should also create an input field which each todo that has 2 purposes
   - when 'enter' is pressed, it will change that todo
-  - when 'tab' is pressed, it will nest that todo
+  - when 'down arrow' is pressed, it will nest that todo
   - input field needs access to the li item
     - it has access to its position
     - it needs access to its specific value
-    - when the inputField is created, it should have an id
-    - 
 
+Requirements (v3):
+- it should have an inputfield with each todo that listens for a down arrow
+- it should have a function that is called when down arrow is pressed on the inputfield of that todo element
+- 
 */
 
 
@@ -36,7 +38,7 @@ var methods = {
   addTodo: function(newTodo) {
     todoList.todos.push({
       todoText: newTodo, 
-      completed: false
+      completed: false,
     });
   },
 
@@ -65,10 +67,21 @@ var methods = {
       })} else {
         todoList.todos.forEach(function(element) {
           element.completed = true;
-        })
-      }
+      })
     }
+  },
+
+  nestTodo: function(position, subTodo) {
+    //likely need to recurse here
+    todoList.todos[position].subtask = 
+    [
+      {
+        todoText: subTodo,
+        completed: false
+      }
+    ]
   }
+}
 
 var handlers = {
 
@@ -97,7 +110,11 @@ var handlers = {
     methods.addTodo(addTodoTextInput.value);
     addTodoTextInput.value = '';
     view.displayTodos();
+  },
 
+  nestTodo: function(position, inputFieldValue) {
+    methods.nestTodo(position, inputFieldValue);
+    view.displayTodos();
   }
 }
 
@@ -165,7 +182,9 @@ var view = {
     });
     todosUl.addEventListener('keyup', function(event) {
       if (event.target.className === 'todoInput' && event.keyCode === 40) {
-        console.log('i wanna nest');
+        var position = parseInt(event. target.parentNode.id);
+        var inputFieldValue = event.srcElement.value;
+        handlers.nestTodo(position, inputFieldValue);
       }
     })
   }
