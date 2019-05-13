@@ -25,7 +25,7 @@ Requirements (v2):
 Requirements (v3):
 - it should have an inputfield with each todo that listens for a down arrow
 - it should have a function that is called when down arrow is pressed on the inputfield of that todo element
-- 
+- it should create a "subtask" array on the given item that has the same 
 */
 
 
@@ -39,6 +39,7 @@ var methods = {
     todoList.todos.push({
       todoText: newTodo, 
       completed: false,
+      subtask: []
     });
   },
 
@@ -72,14 +73,11 @@ var methods = {
   },
 
   nestTodo: function(position, subTodo) {
-    //likely need to recurse here
-    todoList.todos[position].subtask = 
-    [
-      {
+    todoList.todos[position].subtask.push({
         todoText: subTodo,
-        completed: false
-      }
-    ]
+        completed: false,
+        subtask: []
+      })
   }
 }
 
@@ -120,6 +118,7 @@ var handlers = {
 
 var view = {
   displayTodos: function() {
+    // if there are subtasks, then write a child element
     if (todoList.todos.length === 0) {
       console.log('nothing to do');
     }
