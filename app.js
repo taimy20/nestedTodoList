@@ -72,12 +72,43 @@ var methods = {
     }
   },
 
-  nestTodo: function(position, subTodo) {
-    todoList.todos[position].subtask.push({
+  // nestTodo: function(positionMap, subTodo) {
+  //   // if nestTodo is run on a second level subtask, does anything need to change?
+  //     // get its id and mark that as it's position
+  //     // check if it has a parent
+  //     // yes => go get that parent's id
+  //     // no => you have the lowest level id
+  //   // needs to be able to handle n number of positions and enter in the right area
+  //   // positionMap is an array that tells you where the subTodo is being entered
+  //   // 
+  //   todoList.todos[position].subtask.push({
+  //       todoText: subTodo,
+  //       completed: false,
+  //       subtask: []
+  //     })
+  // }
+  nestTodo: function(positionMap, subTodo) {
+    function finder (positionMap) {
+      var suffix = ''
+      for (var i = 1; i < positionMap.length; i++) {
+      suffix = suffix+'.'+'subtask[' + positionMap[i] + ']';
+      };
+      var prefix = 'todoList.todos['+positionMap[0]+']';
+      return eval(prefix+suffix+'.subtask');   
+    };
+    if (positionMap.length > 1) {
+      finder(positionMap).push({
+        todoText: subTodo,
+        completed: false,
+        subtask: []
+      })   
+    } else {
+      todoList.todos[positionMap[0]].subtask.push({
         todoText: subTodo,
         completed: false,
         subtask: []
       })
+    }
   }
 }
 
@@ -110,19 +141,21 @@ var handlers = {
     view.displayTodos();
   },
 
-  nestTodo: function(position, inputFieldValue) {
-    methods.nestTodo(position, inputFieldValue);
+  nestTodo: function(positionMap, inputFieldValue) {
+    methods.nestTodo(positionMap, inputFieldValue);
     view.displayTodos();
   }
 }
 
 var view = {
+  // create an if statement that handles the base case 
+  // 
   displayTodos: function() {
-    // if there are subtasks, then write a child element
     if (todoList.todos.length === 0) {
       console.log('nothing to do');
     }
     var todosUl = document.querySelector('ul')
+    todosUl.id = "headOfTheHouse"
     todosUl.innerHTML = ''
     todoList.todos.forEach(function(element) {
       var todoLi = document.createElement('li');
@@ -181,9 +214,25 @@ var view = {
     });
     todosUl.addEventListener('keyup', function(event) {
       if (event.target.className === 'todoInput' && event.keyCode === 40) {
-        var position = parseInt(event. target.parentNode.id);
+        // var inputFieldValue = event.srcElement.value;
+        // var position = parseInt(event. target.parentNode.id);
+        // handlers.nestTodo(position, inputFieldValue);
         var inputFieldValue = event.srcElement.value;
-        handlers.nestTodo(position, inputFieldValue);
+        var positionMap = [];
+        var eventPlaceholder = event.target
+        function positionMapper(eventPlaceholder){
+          if (eventPlaceholder.parentNode.id === 'headOfTheHouse') {           
+            return positionMap;
+          } else {
+            var position = parseInt(eventPlaceholder.parentNode.id);
+            positionMap.unshift(position);
+            //move up one level
+            eventPlaceholder = eventPlaceholder.parentNode;
+            return positionMapper(eventPlaceholder);
+          }
+        }
+        positionMapper(eventPlaceholder);
+        handlers.nestTodo(positionMap, inputFieldValue);
       }
     })
   }
