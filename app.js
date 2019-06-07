@@ -47,8 +47,19 @@ var methods = {
     todoList.todos[position].todoText = newTodo;
   },
 
-  deleteTodo: function(position) {
-    todoList.todos.splice(position, 1);
+  // deleteTodo: function(position) {
+  //   todoList.todos.splice(position, 1);
+  // },
+  deleteTodo: function(positionMap) {
+  //given a position map, how do you locate that item
+  //use finder method => finder gives you the object in the subtask array
+    var suffix = ''
+    for (var i = 1; i < positionMap.length; i++) {
+    suffix = suffix+'.'+'subtask';
+    };
+    var prefix = 'todoList.todos['+positionMap[0]+']';
+    return eval(prefix+suffix+'.splice('+positionMap[i]+','+'1)');   
+          
   },
 
   toggleCompleted: function(position) {
@@ -148,8 +159,28 @@ var handlers = {
 }
 
 var view = {
-  // create an if statement that handles the base case 
-  // 
+  // displayTodos: function() {
+  //   if (todoList.todos.length === 0) {
+  //     console.log('nothing to do');
+  //   }
+  //   var todosUl = document.querySelector('ul')
+  //   todosUl.id = "headOfTheHouse"
+  //   todosUl.innerHTML = ''
+  //   todoList.todos.forEach(function(element) {
+  //     var todoLi = document.createElement('li');
+  //     todoLi.id = todoList.todos.indexOf(element);
+  //     if (element.completed === true) {
+  //       todoLi.textContent = '(x) ' + element.todoText;
+  //     } else {
+  //       todoLi.textContent = '( ) ' + element.todoText;
+  //     };
+  //     todoLi.appendChild(view.createDeleteButton());
+  //     todoLi.appendChild(view.createToggleButton());
+  //     todoLi.appendChild(view.changeTodoInputField());
+  //     todosUl.appendChild(todoLi);
+  //   });
+  // },
+
   displayTodos: function() {
     if (todoList.todos.length === 0) {
       console.log('nothing to do');
@@ -170,6 +201,27 @@ var view = {
       todoLi.appendChild(view.changeTodoInputField());
       todosUl.appendChild(todoLi);
     });
+    for (var i = 0; i < todoList.todos.length; i++) {
+      if (todoList.todos[i].subtask.length > 0) {
+        var newTodosUl = document.createElement('ul');
+        var newTodosLi = document.createElement('li')
+        todoList.todos[i].subtask.forEach(function(element) {
+          var todoLi = document.createElement('li');
+          todoLi.id = todoList.todos[i].subtask.indexOf(element);
+          if (element.completed === true) {
+            todoLi.textContent = '(x) ' + element.todoText;
+          } else {
+            todoLi.textContent = '( ) ' + element.todoText;
+          };
+          todoLi.appendChild(view.createDeleteButton());
+          todoLi.appendChild(view.createToggleButton());
+          todoLi.appendChild(view.changeTodoInputField()); 
+          newTodosUl.appendChild(todoLi);
+        })
+        var writeHere = document.getElementById(i);
+        writeHere.appendChild(newTodosUl)
+      }
+    }
   },
 
   createDeleteButton: function() {
@@ -198,7 +250,21 @@ var view = {
     todosUl.addEventListener('click', function(event) {
       if (event.target.className === 'deleteButton') {
         var position = parseInt(event.target.parentNode.id)
-        handlers.deleteTodo(position);
+        var positionMap = [];
+        var eventPlaceholder = event.target
+        function positionMapper(eventPlaceholder){
+          if (eventPlaceholder.parentNode.id === 'headOfTheHouse') {           
+            return positionMap;
+          } else {
+            var position = parseInt(eventPlaceholder.parentNode.id);
+            positionMap.unshift(position);
+            //move up one level
+            eventPlaceholder = eventPlaceholder.parentNode;
+            return positionMapper(eventPlaceholder);
+          }
+        }
+        positionMapper(eventPlaceholder);
+        handlers.deleteTodo(positionMap);
       }
       if (event.target.className === 'toggleButton') {
         var position = parseInt(event.target.parentNode.id)
